@@ -372,10 +372,12 @@ async function generatePDF() {
 
     const imgData = canvas.toDataURL("image/png");
 
-    // Calculate PDF dimensions
-    const imgWidth = 210; // A4 width in mm
-    const pageHeight = 297; // A4 height in mm
+    // Calculate PDF dimensions with margins
+    const imgWidth = 190; // A4 width with margins (210 - 20)
+    const pageHeight = 277; // A4 height with margins (297 - 20)
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const leftMargin = 10;
+    const topMargin = 10;
 
     // Create PDF
     const { jsPDF } = window.jspdf;
@@ -385,13 +387,27 @@ async function generatePDF() {
     let position = 0;
 
     // Add image to PDF (handle multiple pages if needed)
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    pdf.addImage(
+      imgData,
+      "PNG",
+      leftMargin,
+      topMargin + position,
+      imgWidth,
+      imgHeight,
+    );
     heightLeft -= pageHeight;
 
     while (heightLeft >= 0) {
       position = heightLeft - imgHeight;
       pdf.addPage();
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      pdf.addImage(
+        imgData,
+        "PNG",
+        leftMargin,
+        topMargin + position,
+        imgWidth,
+        imgHeight,
+      );
       heightLeft -= pageHeight;
     }
 
