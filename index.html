@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Invoice Generator - Wedding & Event Organizer</title>
+        <link rel="stylesheet" href="css/style.css" />
+    </head>
+    <body>
+        <div class="container">
+            <!-- Form Input Section -->
+            <section class="form-section">
+                <h1>Invoice Generator</h1>
+                <p class="subtitle">Wedding & Event Organizer</p>
+
+                <form id="invoiceForm">
+                    <!-- Logo Upload -->
+                    <div class="form-group">
+                        <label for="logoUpload">Logo Usaha (Optional)</label>
+                        <input type="file" id="logoUpload" accept="image/*" />
+                        <div
+                            id="logoPreview"
+                            class="logo-preview-container"
+                            style="display: none"
+                        >
+                            <img id="logoPreviewImg" alt="Logo Preview" />
+                            <button
+                                type="button"
+                                id="removeLogo"
+                                class="btn-remove-logo"
+                            >
+                                × Hapus
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Business Info -->
+                    <div class="form-group">
+                        <label for="businessName">Nama Usaha</label>
+                        <input
+                            type="text"
+                            id="businessName"
+                            placeholder="Nama Event Organizer Anda"
+                            required
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="businessContact">Kontak Usaha</label>
+                        <input
+                            type="text"
+                            id="businessContact"
+                            placeholder="Telp/Email/Alamat"
+                        />
+                    </div>
+
+                    <!-- Client Info -->
+                    <div class="form-group">
+                        <label for="clientName">Nama Client</label>
+                        <input
+                            type="text"
+                            id="clientName"
+                            placeholder="Nama Pengantin/Client"
+                            required
+                        />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventType">Jenis Event</label>
+                            <select id="eventType">
+                                <option value="Wedding">Wedding</option>
+                                <option value="Birthday">Birthday</option>
+                                <option value="Corporate">
+                                    Corporate Event
+                                </option>
+                                <option value="Other">Lainnya</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="eventDate">Tanggal Event</label>
+                            <input type="date" id="eventDate" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="invoiceNumber">No. Invoice</label>
+                        <input
+                            type="text"
+                            id="invoiceNumber"
+                            placeholder="INV-001"
+                            required
+                        />
+                    </div>
+
+                    <!-- Items Section -->
+                    <div class="items-section">
+                        <div class="section-header">
+                            <h3>Detail Layanan</h3>
+                            <button type="button" id="addItem" class="btn-add">
+                                + Tambah Item
+                            </button>
+                        </div>
+
+                        <div id="itemsList">
+                            <!-- Dynamic items will be added here -->
+                            <div class="item-card">
+                                <div class="item-main-row">
+                                    <input
+                                        type="text"
+                                        class="item-name"
+                                        placeholder="Nama Layanan"
+                                        required
+                                    />
+                                    <input
+                                        type="number"
+                                        class="item-qty"
+                                        placeholder="Qty"
+                                        value="1"
+                                        min="1"
+                                        required
+                                    />
+                                    <input
+                                        type="number"
+                                        class="item-price"
+                                        placeholder="Harga"
+                                        min="0"
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        class="btn-remove"
+                                        disabled
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                                <div class="item-details">
+                                    <textarea
+                                        class="item-description"
+                                        placeholder="Deskripsi layanan (optional)"
+                                        rows="2"
+                                    ></textarea>
+                                    <div class="item-image-upload">
+                                        <label class="file-upload-label">
+                                            <input
+                                                type="file"
+                                                class="item-image-input"
+                                                accept="image/*"
+                                            />
+                                            <span>+ Tambah Gambar</span>
+                                        </label>
+                                        <div
+                                            class="item-image-preview"
+                                            style="display: none"
+                                        >
+                                            <img
+                                                class="item-image-preview-img"
+                                                alt="Preview"
+                                            />
+                                            <button
+                                                type="button"
+                                                class="btn-remove-image"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Costs -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="discount">Diskon (%)</label>
+                            <input
+                                type="number"
+                                id="discount"
+                                value="0"
+                                min="0"
+                                max="100"
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tax">Pajak (%)</label>
+                            <input
+                                type="number"
+                                id="tax"
+                                value="0"
+                                min="0"
+                                max="100"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Catatan</label>
+                        <textarea
+                            id="notes"
+                            rows="3"
+                            placeholder="Terima kasih atas kepercayaan Anda"
+                        ></textarea>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Preview Section -->
+            <section class="preview-section">
+                <div class="preview-header">
+                    <h2>Preview Invoice</h2>
+                    <button id="downloadPDF" class="btn-download">
+                        Download PDF
+                    </button>
+                </div>
+
+                <div id="invoicePreview" class="invoice">
+                    <div class="invoice-header">
+                        <div class="business-info">
+                            <div
+                                id="previewLogoContainer"
+                                class="preview-logo"
+                                style="display: none"
+                            >
+                                <img id="previewLogo" alt="Logo" />
+                            </div>
+                            <h2 id="previewBusinessName">Nama Usaha</h2>
+                            <p id="previewBusinessContact">Kontak Usaha</p>
+                        </div>
+                        <div class="invoice-meta">
+                            <h1>INVOICE</h1>
+                            <p>
+                                <strong>No:</strong>
+                                <span id="previewInvoiceNumber">-</span>
+                            </p>
+                            <p>
+                                <strong>Tanggal:</strong>
+                                <span id="previewDate">-</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="client-info">
+                        <p><strong>Kepada:</strong></p>
+                        <p id="previewClientName">-</p>
+                        <p>
+                            <strong>Event:</strong>
+                            <span id="previewEventType">-</span>
+                        </p>
+                        <p>
+                            <strong>Tanggal Event:</strong>
+                            <span id="previewEventDate">-</span>
+                        </p>
+                    </div>
+
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>Layanan</th>
+                                <th>Qty</th>
+                                <th>Harga</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewItems">
+                            <tr>
+                                <td colspan="4" class="empty-state">
+                                    Belum ada item
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="invoice-summary">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="previewSubtotal">Rp 0</span>
+                        </div>
+                        <div
+                            class="summary-row"
+                            id="discountRow"
+                            style="display: none"
+                        >
+                            <span
+                                >Diskon (<span id="previewDiscountPercent"
+                                    >0</span
+                                >%):</span
+                            >
+                            <span id="previewDiscount">Rp 0</span>
+                        </div>
+                        <div
+                            class="summary-row"
+                            id="taxRow"
+                            style="display: none"
+                        >
+                            <span
+                                >Pajak (<span id="previewTaxPercent">0</span
+                                >%):</span
+                            >
+                            <span id="previewTax">Rp 0</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>TOTAL:</span>
+                            <span id="previewTotal">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <div
+                        class="invoice-notes"
+                        id="previewNotesSection"
+                        style="display: none"
+                    >
+                        <p><strong>Catatan:</strong></p>
+                        <p id="previewNotes"></p>
+                    </div>
+
+                    <div class="invoice-footer">
+                        <p>Terima kasih atas kepercayaan Anda</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="js/app.js"></script>
+    </body>
+</html>
