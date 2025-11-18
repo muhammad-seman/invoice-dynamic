@@ -85,17 +85,12 @@ function attachItemCardListeners(itemCard) {
   itemInputs.forEach((input) => {
     if (input.type === "file") {
       input.addEventListener("change", (e) =>
-        handleItemImageUpload(e, itemCard),
+        handleItemImagesUpload(e, itemCard),
       );
     } else {
       input.addEventListener("input", updatePreview);
     }
   });
-
-  const removeImageBtn = itemCard.querySelector(".btn-remove-image");
-  removeImageBtn.addEventListener("click", () =>
-    handleRemoveItemImage(itemCard),
-  );
 }
 
 // Logo Upload Handler
@@ -137,13 +132,10 @@ function addItemRow() {
             <textarea class="item-description" placeholder="Deskripsi layanan (optional)" rows="2"></textarea>
             <div class="item-image-upload">
                 <label class="file-upload-label">
-                    <input type="file" class="item-image-input" accept="image/*">
-                    <span>+ Tambah Gambar</span>
+                    <input type="file" class="item-image-input" accept="image/*" multiple>
+                    <span>+ Tambah Gambar (Max 5)</span>
                 </label>
-                <div class="item-image-preview" style="display: none;">
-                    <img class="item-image-preview-img" alt="Preview">
-                    <button type="button" class="btn-remove-image">×</button>
-                </div>
+                <div class="item-gallery" style="display: none;"></div>
             </div>
         </div>
     `;
@@ -157,33 +149,61 @@ function addItemRow() {
   updatePreview();
 }
 
-// Handle Item Image Upload
-function handleItemImageUpload(e, itemCard) {
-  const file = e.target.files[0];
-  const previewContainer = itemCard.querySelector(".item-image-preview");
-  const previewImg = itemCard.querySelector(".item-image-preview-img");
+// Handle Multiple Item Images Upload
+function handleItemImagesUpload(e, itemCard) {
+  const files = Array.from(e.target.files).slice(0, 5); // Max 5 images
+  const galleryContainer = itemCard.querySelector(".item-gallery");
 
-  if (file && file.type.startsWith("image/")) {
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      previewImg.src = event.target.result;
-      previewContainer.style.display = "inline-block";
-      updatePreview();
-    };
-    reader.readAsDataURL(file);
-  }
+  if (files.length === 0) return;
+
+  galleryContainer.innerHTML = "";
+  galleryContainer.style.display = "grid";
+  galleryContainer.className = `item-gallery gallery-${files.length}`;
+
+  files.forEach((file, index) => {
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const imgWrapper = document.createElement("div");
+        imgWrapper.style.position = "relative";
+
+        const img = document.createElement("img");
+        img.src = event.target.result;
+        img.alt = `Image ${index + 1}`;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "gallery-remove-btn";
+        removeBtn.textContent = "×";
+        removeBtn.type = "button";
+        removeBtn.addEventListener("click", () => {
+          imgWrapper.remove();
+          updateGalleryLayout(itemCard);
+          updatePreview();
+        });
+
+        imgWrapper.appendChild(img);
+        imgWrapper.appendChild(removeBtn);
+        galleryContainer.appendChild(imgWrapper);
+
+        updatePreview();
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 }
 
-// Handle Remove Item Image
-function handleRemoveItemImage(itemCard) {
-  const fileInput = itemCard.querySelector(".item-image-input");
-  const previewContainer = itemCard.querySelector(".item-image-preview");
-  const previewImg = itemCard.querySelector(".item-image-preview-img");
+// Update Gallery Layout after removing image
+function updateGalleryLayout(itemCard) {
+  const gallery = itemCard.querySelector(".item-gallery");
+  const images = gallery.querySelectorAll("img");
+  const count = images.length;
 
-  fileInput.value = "";
-  previewImg.src = "";
-  previewContainer.style.display = "none";
-  updatePreview();
+  if (count === 0) {
+    gallery.style.display = "none";
+    gallery.className = "item-gallery";
+  } else {
+    gallery.className = `item-gallery gallery-${count}`;
+  }
 }
 
 // Remove Item Row
@@ -213,17 +233,15 @@ function collectItemsData() {
     const qty = parseFloat(card.querySelector(".item-qty").value) || 0;
     const price = parseFloat(card.querySelector(".item-price").value) || 0;
     const description = card.querySelector(".item-description").value;
-    const imagePreview = card.querySelector(".item-image-preview-img");
 
-    // Check if image exists and has valid base64 data
-    let image = null;
-    if (
-      imagePreview &&
-      imagePreview.src &&
-      imagePreview.src.startsWith("data:image")
-    ) {
-      image = imagePreview.src;
-    }
+    // Get all images from gallery
+    const images = [];
+    const galleryImgs = card.querySelectorAll(".item-gallery img");
+    galleryImgs.forEach((img) => {
+      if (img.src && img.src.startsWith("data:image")) {
+        images.push(img.src);
+      }
+    });
 
     if (name && qty > 0 && price >= 0) {
       items.push({
@@ -231,7 +249,7 @@ function collectItemsData() {
         qty,
         price,
         description,
-        image,
+        images,
         total: qty * price,
       });
     }
@@ -300,8 +318,13 @@ function updatePreview() {
           serviceContent += `<div class="service-description">${item.description}</div>`;
         }
 
-        if (item.image) {
-          serviceContent += `<img src="${item.image}" class="service-image" alt="${item.name}">`;
+        // Add gallery if images exist
+        if (item.images && item.images.length > 0) {
+          serviceContent += `<div class="service-gallery gallery-${item.images.length}">`;
+          item.images.forEach((imgSrc, idx) => {
+            serviceContent += `<img src="${imgSrc}" alt="${item.name} ${idx + 1}">`;
+          });
+          serviceContent += `</div>`;
         }
 
         serviceContent += `</div>`;
