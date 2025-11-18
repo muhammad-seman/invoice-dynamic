@@ -405,7 +405,7 @@ body {
 .invoice-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     border: 1px solid var(--border);
 }
 
@@ -482,7 +482,7 @@ body {
 .invoice-summary {
     margin-left: auto;
     width: 200px;
-    margin-bottom: 0.75rem;
+    margin-bottom: 2rem;
     border-top: 1px solid var(--border);
     padding-top: 0.5rem;
 }
@@ -506,7 +506,7 @@ body {
 
 /* Invoice Footer */
 .invoice-notes {
-    margin-bottom: 0.75rem;
+    margin-bottom: 2rem;
     padding: 0.5rem;
     background: var(--bg);
     border-radius: 2px;
@@ -521,7 +521,8 @@ body {
 
 .invoice-footer {
     text-align: center;
-    padding-top: 0.75rem;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
     border-top: 1px solid var(--border);
     color: var(--text-light);
     font-size: 0.65rem;
