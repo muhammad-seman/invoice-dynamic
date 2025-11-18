@@ -68,8 +68,34 @@ function init() {
     input.addEventListener("input", updatePreview);
   });
 
+  // Attach event listeners to initial item card
+  attachItemCardListeners(itemsList.querySelector(".item-card"));
+  updateRemoveButtons();
+
   // Initial preview update
   updatePreview();
+}
+
+// Attach Event Listeners to Item Card
+function attachItemCardListeners(itemCard) {
+  const removeBtn = itemCard.querySelector(".btn-remove");
+  removeBtn.addEventListener("click", () => removeItemRow(itemCard));
+
+  const itemInputs = itemCard.querySelectorAll("input, textarea");
+  itemInputs.forEach((input) => {
+    if (input.type === "file") {
+      input.addEventListener("change", (e) =>
+        handleItemImageUpload(e, itemCard),
+      );
+    } else {
+      input.addEventListener("input", updatePreview);
+    }
+  });
+
+  const removeImageBtn = itemCard.querySelector(".btn-remove-image");
+  removeImageBtn.addEventListener("click", () =>
+    handleRemoveItemImage(itemCard),
+  );
 }
 
 // Logo Upload Handler
@@ -124,25 +150,8 @@ function addItemRow() {
 
   itemsList.appendChild(itemCard);
 
-  // Add event listeners
-  const removeBtn = itemCard.querySelector(".btn-remove");
-  removeBtn.addEventListener("click", () => removeItemRow(itemCard));
-
-  const itemInputs = itemCard.querySelectorAll("input, textarea");
-  itemInputs.forEach((input) => {
-    if (input.type === "file") {
-      input.addEventListener("change", (e) =>
-        handleItemImageUpload(e, itemCard),
-      );
-    } else {
-      input.addEventListener("input", updatePreview);
-    }
-  });
-
-  const removeImageBtn = itemCard.querySelector(".btn-remove-image");
-  removeImageBtn.addEventListener("click", () =>
-    handleRemoveItemImage(itemCard),
-  );
+  // Attach event listeners using shared function
+  attachItemCardListeners(itemCard);
 
   updateRemoveButtons();
   updatePreview();
@@ -205,7 +214,16 @@ function collectItemsData() {
     const price = parseFloat(card.querySelector(".item-price").value) || 0;
     const description = card.querySelector(".item-description").value;
     const imagePreview = card.querySelector(".item-image-preview-img");
-    const image = imagePreview && imagePreview.src ? imagePreview.src : null;
+
+    // Check if image exists and has valid base64 data
+    let image = null;
+    if (
+      imagePreview &&
+      imagePreview.src &&
+      imagePreview.src.startsWith("data:image")
+    ) {
+      image = imagePreview.src;
+    }
 
     if (name && qty > 0 && price >= 0) {
       items.push({
